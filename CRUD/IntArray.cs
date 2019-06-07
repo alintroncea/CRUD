@@ -6,17 +6,17 @@ namespace CRUD
 {
     public class IntArray
     {
-        int[] array;
+        public int[] array;
 
         public IntArray()
         {
-            array = new int[] { 1, 2, 3, 4 };
+            array = new int[0];
         }
 
         public void Add(int element)
-        {          
+        {
             Array.Resize(ref array, array.Length + 1);
-            array[array.Length - 1] = element;        
+            array[array.Length - 1] = element;
         }
 
         public int Count()
@@ -36,11 +36,8 @@ namespace CRUD
 
         public bool Contains(int element)
         {
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == element)
-                    return true;
-            }
+            if (Array.IndexOf(array, element) != -1)
+                return true;
             return false;
         }
         public int IndexOf(int element)
@@ -59,42 +56,38 @@ namespace CRUD
 
         public void Clear()
         {
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] = 0;
-            }
+            array = new int[0];
         }
 
         public void Remove(int element)
         {
+            int index = 0;
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i] == element)
                 {
-                    array[i] = 0;
+                    index = i;
                     break;
                 }
 
             }
-        }
+            for (int i = index; i < array.Length - 1; i++)
+            {
+                array[i] = array[i + 1];
+            }
+            Array.Resize(ref array, array.Length - 1);
 
+
+        }
         public void RemoveAt(int index)
         {
-            array[index] = 0;
-        }
-
-        public int[] GetArray()
-        {
-            return array;
-        }
-
-        public void ReadArray()
-        {
-            for (int i = 0; i < array.Length; i++)
+            for (int i = index; i < array.Length - 1; i++)
             {
-                Console.WriteLine("Index :" +i+ " value :" + array[i]);
+                array[i] = array[i + 1];
             }
+            Array.Resize(ref array, array.Length - 1);
         }
-
     }
+
 }
+

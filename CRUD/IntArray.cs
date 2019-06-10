@@ -6,17 +6,27 @@ namespace CRUD
 {
     public class IntArray
     {
-        public int[] array;
+        private const int ArraySize = 4;
+        private int counter;
+        private int[] array;
 
         public IntArray()
         {
-            array = new int[0];
+            counter = 0;
+            array = new int[ArraySize];
         }
 
         public void Add(int element)
-        {
-            Array.Resize(ref array, array.Length + 1);
-            array[array.Length - 1] = element;
+            {
+            if (counter >= array.Length)
+            {
+                ResizeArray();
+                array[counter] = element;
+                counter++;
+            }
+
+            array[counter] = element;
+            counter++;
         }
 
         public int Count()
@@ -26,7 +36,7 @@ namespace CRUD
 
         public int Element(int index)
         {
-            return Array.IndexOf(array, index);
+            return array[index];
         }
 
         public void SetElement(int index, int element)
@@ -36,10 +46,9 @@ namespace CRUD
 
         public bool Contains(int element)
         {
-            if (Array.IndexOf(array, element) != -1)
-                return true;
-            return false;
+            return Array.IndexOf(array, element) != -1;
         }
+
         public int IndexOf(int element)
         {
             return Array.IndexOf(array, element);
@@ -51,6 +60,7 @@ namespace CRUD
             {
                 array[i] = array[i - 1];
             }
+
             array[index - 1] = element;
         }
 
@@ -69,25 +79,30 @@ namespace CRUD
                     index = i;
                     break;
                 }
-
             }
+
             for (int i = index; i < array.Length - 1; i++)
             {
                 array[i] = array[i + 1];
             }
+
             Array.Resize(ref array, array.Length - 1);
-
-
         }
+
         public void RemoveAt(int index)
         {
             for (int i = index; i < array.Length - 1; i++)
             {
                 array[i] = array[i + 1];
             }
+
             Array.Resize(ref array, array.Length - 1);
         }
+
+        private void ResizeArray()
+        {
+            int oldLength = array.Length;
+            Array.Resize(ref array, array.Length + oldLength);
+        }
     }
-
 }
-

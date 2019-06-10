@@ -12,51 +12,46 @@ namespace CRUD
 
         public IntArray()
         {
-            counter = 0;
-            array = new int[ArraySize];
+            this.counter = 0;
+            this.array = new int[ArraySize];
         }
 
         public void Add(int element)
-            {
+        {
             if (counter >= array.Length)
             {
                 ResizeArray();
-                array[counter] = element;
-                counter++;
             }
 
             array[counter] = element;
             counter++;
         }
 
-        public int Count()
-        {
-            return array.Length;
-        }
+        public int Count() => counter;
 
-        public int Element(int index)
-        {
-            return array[index];
-        }
+        public int Element(int index) => array[index];
 
-        public void SetElement(int index, int element)
-        {
-            array[index] = element;
-        }
+        public void SetElement(int index, int element) => array[index] = element;
 
-        public bool Contains(int element)
-        {
-            return Array.IndexOf(array, element) != -1;
-        }
+        public bool Contains(int element) => IndexOf(element) != -1;
 
         public int IndexOf(int element)
         {
-            return Array.IndexOf(array, element);
+            for (int i = 0; i < counter; i++)
+            {
+                if (array[i] == element)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         public void Insert(int index, int element)
         {
-            for (int i = array.Length - 1; i >= index; i--)
+            ResizeArray();
+            for (int i = counter; i >= index; i--)
             {
                 array[i] = array[i - 1];
             }
@@ -66,37 +61,26 @@ namespace CRUD
 
         public void Clear()
         {
-            array = new int[0];
+            counter = 0;
         }
 
         public void Remove(int element)
         {
-            int index = 0;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == element)
-                {
-                    index = i;
-                    break;
-                }
-            }
+            int index = IndexOf(element);
 
-            for (int i = index; i < array.Length - 1; i++)
-            {
-                array[i] = array[i + 1];
-            }
+            RemoveAt(index);
 
-            Array.Resize(ref array, array.Length - 1);
+            counter--;
         }
 
         public void RemoveAt(int index)
         {
-            for (int i = index; i < array.Length - 1; i++)
+            for (int i = index; i < counter - 1; i++)
             {
                 array[i] = array[i + 1];
             }
 
-            Array.Resize(ref array, array.Length - 1);
+            counter--;
         }
 
         private void ResizeArray()

@@ -7,6 +7,7 @@ namespace CRUD
     public class IntArray
     {
         private const int ArraySize = 4;
+        private const int ResizeLength = 2;
         private int counter;
         private int[] array;
 
@@ -14,6 +15,14 @@ namespace CRUD
         {
             this.counter = 0;
             this.array = new int[ArraySize];
+        }
+
+        public int Count => counter;
+
+        public int this[int index]
+        {
+            get => array[index];
+            set => array[index] = value;
         }
 
         public void Add(int element)
@@ -26,12 +35,6 @@ namespace CRUD
             array[counter] = element;
             counter++;
         }
-
-        public int Count() => counter;
-
-        public int Element(int index) => array[index];
-
-        public void SetElement(int index, int element) => array[index] = element;
 
         public bool Contains(int element) => IndexOf(element) != -1;
 
@@ -66,11 +69,7 @@ namespace CRUD
 
         public void Remove(int element)
         {
-            int index = IndexOf(element);
-
-            RemoveAt(index);
-
-            counter--;
+            RemoveAt(IndexOf(element));
         }
 
         public void RemoveAt(int index)
@@ -85,8 +84,7 @@ namespace CRUD
 
         private void ResizeArray()
         {
-            int oldLength = array.Length;
-            Array.Resize(ref array, array.Length + oldLength);
+            Array.Resize(ref array, array.Length * ResizeLength);
         }
     }
 }

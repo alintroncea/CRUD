@@ -16,11 +16,11 @@ namespace CRUD
             intArray.Add(3);
             intArray.Add(7);
             intArray.Add(10);
-            Assert.Equal("16", intArray.Element(0).ToString());
-            Assert.Equal("8", intArray.Element(1).ToString());
-            Assert.Equal("3", intArray.Element(2).ToString());
-            Assert.Equal("7", intArray.Element(3).ToString());
-            Assert.Equal("5", intArray.Count().ToString());
+            Assert.Equal("16", intArray[0].ToString());
+            Assert.Equal("8", intArray[1].ToString());
+            Assert.Equal("3", intArray[2].ToString());
+            Assert.Equal("7", intArray[3].ToString());
+            Assert.Equal("5", intArray.Count.ToString());
 
         }
         [Fact]
@@ -30,14 +30,14 @@ namespace CRUD
             intArray.Add(8);
             intArray.Add(3);
             intArray.Add(7);         
-            Assert.Equal("4", intArray.Count().ToString());
+            Assert.Equal("4", intArray.Count.ToString());
         }
 
         [Fact]
         public void TestGetElement()
         {
             intArray.Add(16);
-            Assert.Equal("16", intArray.Element(0).ToString());
+            Assert.Equal("16", intArray[0].ToString());
         }
 
         [Fact]
@@ -47,8 +47,8 @@ namespace CRUD
             intArray.Add(8);
             intArray.Add(3);
             intArray.Add(7);
-            intArray.SetElement(2,9);
-            Assert.Equal("9", intArray.Element(2).ToString());
+            intArray[2] = 9;
+            Assert.Equal("9", intArray[2].ToString());
         }
 
 
@@ -77,11 +77,11 @@ namespace CRUD
             intArray.Add(7);
             intArray.Add(8);
             intArray.Insert(2,14);
-            Assert.Equal("2", intArray.Element(0).ToString());
-            Assert.Equal("14", intArray.Element(1).ToString());
-            Assert.Equal("4", intArray.Element(2).ToString());
-            Assert.Equal("7", intArray.Element(3).ToString());
-            Assert.Equal("8", intArray.Element(4).ToString());
+            Assert.Equal("2", intArray[0].ToString());
+            Assert.Equal("14", intArray[1].ToString());
+            Assert.Equal("4", intArray[2].ToString());
+            Assert.Equal("7", intArray[3].ToString());
+            Assert.Equal("8", intArray[4].ToString());
 
         }
 
@@ -92,9 +92,9 @@ namespace CRUD
             intArray.Add(4);
             intArray.Add(7);
             intArray.Add(8);
-            Assert.Equal("4", intArray.Count().ToString());
+            Assert.Equal("4", intArray.Count.ToString());
             intArray.Clear();
-            Assert.Equal("0", intArray.Count().ToString());
+            Assert.Equal("0", intArray.Count.ToString());
 
         }
 
@@ -106,7 +106,7 @@ namespace CRUD
             intArray.Add(7);
             intArray.Add(8);
             intArray.Remove(2);
-            Assert.Equal("7", intArray.Element(1).ToString());
+            Assert.Equal("7", intArray[1].ToString());
 
         }
 
@@ -118,7 +118,7 @@ namespace CRUD
             intArray.Add(7);
             intArray.Add(8);
             intArray.RemoveAt(2);
-            Assert.Equal("8", intArray.Element(2).ToString());
+            Assert.Equal("8", intArray[2].ToString());
 
         }
     }

@@ -35,8 +35,8 @@ namespace CRUD
         [Fact]
         public void TestContains()
         {
-            objArray.Add(4);
-            Assert.True(objArray.Contains(4));
+            objArray.Add("alin");
+            Assert.True(objArray.Contains("alin"));
         }
 
         [Fact]

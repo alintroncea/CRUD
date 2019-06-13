@@ -26,7 +26,7 @@ namespace CRUD
             set => array[index] = value;
         }
 
-        public void Add(int element)
+        public void Add(object element)
         {
             if (counter >= array.Length)
             {

@@ -1,25 +1,26 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CRUD
 {
-    public class IntArray
+    public class ObjectArray
     {
         private const int ArraySize = 4;
         private const int ResizeLength = 2;
         private int counter;
-        private int[] array;
+        private object[] array;
 
-        public IntArray()
+        public ObjectArray()
         {
             this.counter = 0;
-            this.array = new int[ArraySize];
+            this.array = new object[ArraySize];
         }
 
         public int Count => counter;
 
-        public int this[int index]
+        public object this[int index]
         {
             get => array[index];
             set => array[index] = value;
@@ -36,13 +37,13 @@ namespace CRUD
             counter++;
         }
 
-        public bool Contains(int element) => IndexOf(element) != -1;
+        public bool Contains(object element) => IndexOf(element) != -1;
 
-        public int IndexOf(int element)
+        public int IndexOf(object element)
         {
             for (int i = 0; i < counter; i++)
             {
-                if (array[i] == element)
+                if (array[i].Equals(element))
                 {
                     return i;
                 }
@@ -51,7 +52,7 @@ namespace CRUD
             return -1;
         }
 
-        public void Insert(int index, int element)
+        public void Insert(int index, object element)
         {
             ResizeArray();
             for (int i = counter; i >= index; i--)
@@ -67,7 +68,7 @@ namespace CRUD
             counter = 0;
         }
 
-        public void Remove(int element)
+        public void Remove(object element)
         {
             RemoveAt(IndexOf(element));
         }

@@ -55,9 +55,9 @@ namespace CRUD
             objArray.Add(4);
             objArray.Add(7);
             objArray.Add(8);
-            objArray.Insert(2, 14);
-            Assert.Equal("2", objArray[0].ToString());
-            Assert.Equal("14", objArray[1].ToString());
+            objArray.Insert(0, 14);
+            Assert.Equal("14", objArray[0].ToString());
+            Assert.Equal("2", objArray[1].ToString());
             Assert.Equal("4", objArray[2].ToString());
             Assert.Equal("7", objArray[3].ToString());
             Assert.Equal("8", objArray[4].ToString());

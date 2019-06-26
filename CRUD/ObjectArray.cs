@@ -5,17 +5,19 @@ using System.Text;
 
 namespace CRUD
 {
-    public class ObjectArray
+#pragma warning disable CA1710 // Identifiers should have correct suffix
+    public class ObjectArray : IEnumerable
+#pragma warning restore CA1710 // Identifiers should have correct suffix
     {
-        private const int ArraySize = 4;
-        private const int ResizeLength = 2;
+        protected const int ArraySize = 5;
+        protected const int ResizeLength = 2;
         private int counter;
         private object[] array;
 
         public ObjectArray()
         {
-            this.counter = 0;
-            this.array = new object[ArraySize];
+            counter = 0;
+            array = new object[ArraySize];
         }
 
         public int Count => counter;
@@ -26,7 +28,17 @@ namespace CRUD
             set => array[index] = value;
         }
 
-        public void Add(object element)
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return array.GetEnumerator();
+        }
+
+        public ObjectEnumerator GetEnumerator()
+        {
+            return new ObjectEnumerator(array);
+        }
+
+        public virtual void Add(object element)
         {
             if (counter >= array.Length)
             {
@@ -52,8 +64,9 @@ namespace CRUD
             return -1;
         }
 
-        public void Insert(int index, object element)
+        public virtual void Insert(int index, object element)
         {
+            index++;
             ResizeArray();
             for (int i = counter; i >= index; i--)
             {
@@ -83,9 +96,40 @@ namespace CRUD
             counter--;
         }
 
-        private void ResizeArray()
+        protected void ResizeArray()
         {
             Array.Resize(ref array, array.Length * ResizeLength);
+        }
+
+        public class ObjectEnumerator : IEnumerator
+        {
+            private readonly object[] objArray;
+
+            private int position = -1;
+
+            public ObjectEnumerator(object[] array)
+            {
+                objArray = array;
+            }
+
+            public object Current
+            {
+                get
+                {
+                    return objArray[position];
+                }
+            }
+
+            public bool MoveNext()
+            {
+                position++;
+                return position < objArray.Length;
+            }
+
+            public void Reset()
+            {
+                position = -1;
+            }
         }
     }
 }

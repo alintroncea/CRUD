@@ -6,39 +6,42 @@ using System.Text;
 namespace CRUD
 {
 #pragma warning disable CA1710 // Identifiers should have correct suffix
-    public class ObjectArray : IEnumerable
+    public class List<T> : IEnumerable<T>
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     {
         protected const int ArraySize = 5;
         protected const int ResizeLength = 2;
         private int counter;
-        private object[] array;
+        private T[] array;
 
-        public ObjectArray()
+        public List()
         {
             counter = 0;
-            array = new object[ArraySize];
+            array = new T[ArraySize];
         }
 
         public int Count => counter;
 
-        public object this[int index]
+        public virtual T this[int index]
         {
             get => array[index];
             set => array[index] = value;
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                yield return array[i];
+            }
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return array.GetEnumerator();
+            return GetEnumerator();
         }
 
-        public ObjectEnumerator GetEnumerator()
-        {
-            return new ObjectEnumerator(array);
-        }
-
-        public virtual void Add(object element)
+        public virtual void Add(T element)
         {
             if (counter >= array.Length)
             {
@@ -49,9 +52,9 @@ namespace CRUD
             counter++;
         }
 
-        public bool Contains(object element) => IndexOf(element) != -1;
+        public bool Contains(T element) => IndexOf(element) != -1;
 
-        public int IndexOf(object element)
+        public int IndexOf(T element)
         {
             for (int i = 0; i < counter; i++)
             {
@@ -64,7 +67,7 @@ namespace CRUD
             return -1;
         }
 
-        public virtual void Insert(int index, object element)
+        public virtual void Insert(int index, T element)
         {
             index++;
             ResizeArray();
@@ -81,7 +84,7 @@ namespace CRUD
             counter = 0;
         }
 
-        public void Remove(object element)
+        public void Remove(T element)
         {
             RemoveAt(IndexOf(element));
         }
@@ -99,37 +102,6 @@ namespace CRUD
         protected void ResizeArray()
         {
             Array.Resize(ref array, array.Length * ResizeLength);
-        }
-
-        public class ObjectEnumerator : IEnumerator
-        {
-            private readonly object[] objArray;
-
-            private int position = -1;
-
-            public ObjectEnumerator(object[] array)
-            {
-                objArray = array;
-            }
-
-            public object Current
-            {
-                get
-                {
-                    return objArray[position];
-                }
-            }
-
-            public bool MoveNext()
-            {
-                position++;
-                return position < objArray.Length;
-            }
-
-            public void Reset()
-            {
-                position = -1;
-            }
         }
     }
 }

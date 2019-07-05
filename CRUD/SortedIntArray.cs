@@ -5,10 +5,10 @@ using System.Text;
 namespace CRUD
 {
 #pragma warning disable CA1710 // Identifiers should have correct suffix
-    public class SortedList : List<int>
+    public class SortedIntArray : List<int>
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     {
-        public SortedList()
+        public SortedIntArray()
         {
         }
 

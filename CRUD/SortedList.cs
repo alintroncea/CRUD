@@ -4,11 +4,11 @@ using System.Text;
 
 namespace CRUD
 {
-#pragma warning disable CA1710 // Identifiers should have correct suffix
-    public class SortedIntArray : List<int>
-#pragma warning restore CA1710 // Identifiers should have correct suffix
+#pragma warning disable CA1036 // Override methods on comparable types
+    public class SortedList : List<int>
+#pragma warning restore CA1036 // Override methods on comparable types
     {
-        public SortedIntArray()
+        public SortedList()
         {
         }
 

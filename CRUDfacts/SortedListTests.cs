@@ -6,11 +6,12 @@ namespace CRUD
 {
     public class SortedListTests
     {
-        SortedList sortedList = new SortedList();
-
+ 
         [Fact]
         public void TestAdd()
         {
+            SortedList<int> sortedList = new SortedList<int>();
+
             sortedList.Add(1);
             sortedList.Add(5);
             sortedList.Add(7);
@@ -24,6 +25,7 @@ namespace CRUD
         [Fact]
         public void TestInsert()
         {
+            SortedList<int> sortedList = new SortedList<int>();
             sortedList.Add(1);
             sortedList.Add(5);
             sortedList.Add(7);
@@ -40,6 +42,7 @@ namespace CRUD
         [Fact]
         public void TestSettingIndexAtFirstElement()
         {
+            SortedList<int> sortedList = new SortedList<int>();
             sortedList.Add(3);
             sortedList.Add(9);
             Assert.Equal("3", sortedList[0].ToString());
@@ -53,6 +56,7 @@ namespace CRUD
         [Fact]
         public void TestSettingIndexInMiddle()
         {
+            SortedList<int> sortedList = new SortedList<int>();
             sortedList.Add(7);
             sortedList.Add(4);
             sortedList.Add(12);
@@ -68,6 +72,7 @@ namespace CRUD
         [Fact]
         public void TestSettingIndexAtLastElement()
         {
+            SortedList<int> sortedList = new SortedList<int>();
             sortedList.Add(7);
             sortedList.Add(4);
             sortedList.Add(12);
@@ -83,6 +88,7 @@ namespace CRUD
         [Fact]
         public void TestSettingIndexWithOneElement()
         {
+            SortedList<int> sortedList = new SortedList<int>();
             sortedList.Add(7);         
             Assert.Equal("7", sortedList[0].ToString());
             sortedList.SetValue(0, 1);

@@ -5,22 +5,22 @@ using System.Text;
 namespace CRUD
 {
 #pragma warning disable CA1036 // Override methods on comparable types
-    public class SortedList : List<int>
-#pragma warning restore CA1036 // Override methods on comparable types
+    public class SortedList<T> : List<T>
+        where T : IComparable<T>
     {
         public SortedList()
         {
         }
 
-        public override void Add(int element)
+        public override void Add(T element)
         {
             base.Add(element);
-            SortArray();
+            SortList();
         }
 
-        public override void Insert(int index, int element)
+        public override void Insert(int index, T element)
         {
-            if (Count == 0 || this[index] <= element)
+            if (Count == 0 || this[index].CompareTo(element) == -1)
             {
                 return;
             }
@@ -28,27 +28,26 @@ namespace CRUD
             base.Insert(index, element);
         }
 
-        public void SetValue(int index, int value)
+        public void SetValue(int index, T value)
         {
-            if (!IsInOrder(index, value))
+            if (index == 0 && this[index + 1].CompareTo(value) < 0)
             {
                 return;
+            }
+
+            if (index == Count - 1 && this[index - 1].CompareTo(value) > 0)
+            {
+                return;
+            }
+            else if (index != 0 && index != Count - 1 && (this[index - 1].CompareTo(value) > 0 || this[index + 1].CompareTo(value) < 0))
+            {
+                    return;
             }
 
             this[index] = value;
         }
 
-        private bool IsInOrder(int index, int value)
-        {
-            return TryGetValue(index - 1, int.MinValue) <= value && value <= TryGetValue(index + 1, int.MaxValue);
-        }
-
-        private int TryGetValue(int index, int defaultValue)
-        {
-            return index >= 0 && index < Count ? this[index] : defaultValue;
-        }
-
-        private void SortArray()
+        private void SortList()
         {
             bool swaped = true;
             while (swaped)
@@ -56,7 +55,7 @@ namespace CRUD
                 swaped = false;
                 for (int j = 1; j < Count; j++)
                 {
-                    if (this[j] < this[j - 1])
+                    if (this[j].CompareTo(this[j - 1]) == -1)
                     {
                         var temp = this[j];
                         this[j] = this[j - 1];

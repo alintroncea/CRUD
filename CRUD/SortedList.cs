@@ -4,7 +4,6 @@ using System.Text;
 
 namespace CRUD
 {
-#pragma warning disable CA1036 // Override methods on comparable types
     public class SortedList<T> : List<T>
         where T : IComparable<T>
     {

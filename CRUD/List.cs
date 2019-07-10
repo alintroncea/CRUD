@@ -5,34 +5,34 @@ using System.Text;
 
 namespace CRUD
 {
-#pragma warning disable CA1710 // Identifiers should have correct suffix
-    public class List<T> : IEnumerable<T>
-#pragma warning restore CA1710 // Identifiers should have correct suffix
+    public class List<T> : IList<T>
     {
         protected const int ArraySize = 5;
         protected const int ResizeLength = 2;
         private int counter;
-        private T[] array;
+        private T[] classArray;
 
         public List()
         {
             counter = 0;
-            array = new T[ArraySize];
+            classArray = new T[ArraySize];
         }
 
         public int Count => counter;
 
+        public bool IsReadOnly => false;
+
         public virtual T this[int index]
         {
-            get => array[index];
-            set => array[index] = value;
+            get => classArray[index];
+            set => classArray[index] = value;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {
-                yield return array[i];
+                yield return classArray[i];
             }
         }
 
@@ -41,24 +41,24 @@ namespace CRUD
             return GetEnumerator();
         }
 
-        public virtual void Add(T element)
+        public virtual void Add(T item)
         {
-            if (counter >= array.Length)
+            if (counter >= classArray.Length)
             {
                 ResizeArray();
             }
 
-            array[counter] = element;
+            classArray[counter] = item;
             counter++;
         }
 
-        public bool Contains(T element) => IndexOf(element) != -1;
+        public bool Contains(T item) => IndexOf(item) != -1;
 
-        public int IndexOf(T element)
+        public int IndexOf(T item)
         {
             for (int i = 0; i < counter; i++)
             {
-                if (array[i].Equals(element))
+                if (classArray[i].Equals(item))
                 {
                     return i;
                 }
@@ -67,16 +67,16 @@ namespace CRUD
             return -1;
         }
 
-        public virtual void Insert(int index, T element)
+        public virtual void Insert(int index, T item)
         {
             index++;
             ResizeArray();
             for (int i = counter; i >= index; i--)
             {
-                array[i] = array[i - 1];
+                classArray[i] = classArray[i - 1];
             }
 
-            array[index - 1] = element;
+            classArray[index - 1] = item;
         }
 
         public void Clear()
@@ -84,24 +84,35 @@ namespace CRUD
             counter = 0;
         }
 
-        public void Remove(T element)
-        {
-            RemoveAt(IndexOf(element));
-        }
-
         public void RemoveAt(int index)
         {
             for (int i = index; i < counter - 1; i++)
             {
-                array[i] = array[i + 1];
+                classArray[i] = classArray[i + 1];
             }
 
             counter--;
         }
 
+        public bool Remove(T item)
+        {
+            RemoveAt(IndexOf(item));
+            return Contains(item) && IndexOf(item) != -1;
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            int j = arrayIndex;
+            for (int i = arrayIndex; i < array.Length; i++)
+            {
+                array.SetValue(classArray[i], j);
+                j++;
+            }
+        }
+
         protected void ResizeArray()
         {
-            Array.Resize(ref array, array.Length * ResizeLength);
+            Array.Resize(ref classArray, classArray.Length * ResizeLength);
         }
     }
 }

@@ -138,5 +138,33 @@ namespace CRUD
             done = enumerator.MoveNext();
             done = enumerator.MoveNext();
         }
+
+        [Fact]
+        public void TestCopyTo()
+        {
+            var myList = new List<int> { 9, 3, 4, 6 };
+
+            int[] array = new int[myList.Count];
+            myList.CopyTo(array, 0);
+
+            Assert.Equal("9", array[0].ToString());
+            Assert.Equal("3", array[1].ToString());
+            Assert.Equal("4", array[2].ToString());
+            Assert.Equal("6", array[3].ToString());
+        }
+
+        [Fact]
+        public void TestCopyTo2()
+        {
+            var myList = new List<string> { "alin", "mihai", "alex", "pedro" };
+
+            string[] array = new string[myList.Count];
+            myList.CopyTo(array, 0);
+
+            Assert.Equal("alin", array[0].ToString());
+            Assert.Equal("mihai", array[1].ToString());
+            Assert.Equal("alex", array[2].ToString());
+            Assert.Equal("pedro", array[3].ToString());
+        }
     }
 }

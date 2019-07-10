@@ -11,20 +11,20 @@ namespace CRUD
         {
         }
 
-        public override void Add(T element)
+        public override void Add(T item)
         {
-            base.Add(element);
+            base.Add(item);
             SortList();
         }
 
-        public override void Insert(int index, T element)
+        public override void Insert(int index, T item)
         {
-            if (Count == 0 || this[index].CompareTo(element) == -1)
+            if (Count == 0 || this[index].CompareTo(item) == -1)
             {
                 return;
             }
 
-            base.Insert(index, element);
+            base.Insert(index, item);
         }
 
         public void SetValue(int index, T value)

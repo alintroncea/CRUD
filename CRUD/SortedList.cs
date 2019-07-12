@@ -29,16 +29,12 @@ namespace CRUD
 
         public void SetValue(int index, T value)
         {
-            if (index == 0 && this[index + 1].CompareTo(value) < 0)
+            if (index == 0 && this[index + 1].CompareTo(value) < 0 || index == Count - 1 && this[index - 1].CompareTo(value) > 0)
             {
                 return;
             }
 
-            if (index == Count - 1 && this[index - 1].CompareTo(value) > 0)
-            {
-                return;
-            }
-            else if (index != 0 && index != Count - 1 && (this[index - 1].CompareTo(value) > 0 || this[index + 1].CompareTo(value) < 0))
+            if (index != 0 && index != Count - 1 && (this[index - 1].CompareTo(value) > 0 || this[index + 1].CompareTo(value) < 0))
             {
                     return;
             }

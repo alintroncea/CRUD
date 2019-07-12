@@ -103,7 +103,7 @@ namespace CRUD
         public void CopyTo(T[] array, int arrayIndex)
         {
             int j = arrayIndex;
-            for (int i = arrayIndex; i < array.Length; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array.SetValue(classArray[i], j);
                 j++;

@@ -28,18 +28,33 @@ namespace CRUD
         }
 
         public void SetValue(int index, T value)
-        {
-            if (index == 0 && this[index + 1].CompareTo(value) < 0 || index == Count - 1 && this[index - 1].CompareTo(value) > 0)
+            {
+            if (!CompareValues(index, value))
             {
                 return;
             }
 
-            if (index != 0 && index != Count - 1 && (this[index - 1].CompareTo(value) > 0 || this[index + 1].CompareTo(value) < 0))
+            this[index] = value;
+        }
+
+        private bool CompareValues(int index, T value)
+        {
+            if (Count == 1)
             {
-                    return;
+                return true;
             }
 
-            this[index] = value;
+            if (index == 0)
+            {
+                return this[index + 1].CompareTo(value) > 0;
+            }
+
+            if (index == Count - 1)
+            {
+                return this[index - 1].CompareTo(value) < 0;
+            }
+
+            return this[index - 1].CompareTo(value) < 0 && this[index + 1].CompareTo(value) > 0;
         }
 
         private void SortList()

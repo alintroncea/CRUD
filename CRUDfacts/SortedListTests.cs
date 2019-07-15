@@ -92,6 +92,7 @@ namespace CRUD
             sortedList.Add(7);         
             Assert.Equal("7", sortedList[0].ToString());
             sortedList.SetValue(0, 1);
+            Assert.Equal("1", sortedList[0].ToString());
         }
     }
 }

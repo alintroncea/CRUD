@@ -142,13 +142,12 @@ namespace CRUD
 
         private void CheckForOutOfBoundsException(int index)
         {
-            const string IndexOutOfRangeMessage = "this index is out of bounds";
             if (index >= 0 && index <= Count)
             {
                 return;
             }
 
-            throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
+            throw new ArgumentOutOfRangeException(index + "this index is out of bounds");
         }
     }
 }

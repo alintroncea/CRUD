@@ -27,21 +27,14 @@ namespace CRUD
         {
             get
             {
-                if (index < 0 || index > Count)
-                {
-                    throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
-                }
+                CheckForOutOfBoundsException(index);
 
                 return classArray[index];
             }
 
             set
             {
-                if (index < 0 || index > Count)
-                {
-                    throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
-                }
-
+                CheckForOutOfBoundsException(index);
                 classArray[index] = value;
             }
         }
@@ -87,11 +80,7 @@ namespace CRUD
 
         public virtual void Insert(int index, T item)
         {
-            if (index < 0 || index > Count)
-            {
-                throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
-            }
-
+            CheckForOutOfBoundsException(index);
             index++;
             ResizeArray();
             for (int i = counter; i >= index; i--)
@@ -109,11 +98,7 @@ namespace CRUD
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index > Count)
-            {
-                throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
-            }
-
+            CheckForOutOfBoundsException(index);
             for (int i = index; i < counter - 1; i++)
             {
                 classArray[i] = classArray[i + 1];
@@ -130,14 +115,11 @@ namespace CRUD
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            CheckForOutOfBoundsException(arrayIndex);
+
             if (array is null)
             {
                 throw new ArgumentNullException(nameof(array), "array is null");
-            }
-
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(arrayIndex + IndexOutOfRangeMessage);
             }
 
             if (Count > array.Length)
@@ -156,6 +138,16 @@ namespace CRUD
         protected void ResizeArray()
         {
             Array.Resize(ref classArray, classArray.Length * ResizeLength);
+        }
+
+        private void CheckForOutOfBoundsException(int index)
+        {
+            if (index >= 0 && index <= Count)
+            {
+                return;
+            }
+
+            throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
         }
     }
 }

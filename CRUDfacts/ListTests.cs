@@ -5,7 +5,7 @@ namespace CRUD
 {
     public class ListTests
     {
-       
+
         [Fact]
         public void TestAdd()
         {
@@ -31,7 +31,7 @@ namespace CRUD
             myList.Add(16);
             myList.Add(8);
             myList.Add(3);
-            myList.Add(7);         
+            myList.Add(7);
             Assert.Equal("4", myList.Count.ToString());
         }
         [Fact]
@@ -72,6 +72,19 @@ namespace CRUD
         }
 
         [Fact]
+        public void TestInsertOutOfRange()
+        {
+            var myList = new List<int>();
+
+            myList.Add(2);
+            myList.Add(4);
+            myList.Add(7);
+            myList.Add(8);            
+            Assert.Throws<ArgumentOutOfRangeException>(() => myList.Insert(-1, 14));
+
+        }
+
+        [Fact]
         public void TestClear()
         {
             var myList = new List<int>();
@@ -99,7 +112,7 @@ namespace CRUD
             Assert.Equal("7", myList[1].ToString());
 
         }
-
+       
         [Fact]
         public void TestRemoveAt()
         {
@@ -111,6 +124,19 @@ namespace CRUD
             myList.Add(8);
             myList.RemoveAt(2);
             Assert.Equal("8", myList[2].ToString());
+
+        }
+
+        [Fact]
+        public void TestRemoveAtOutOfBounds()
+        {
+            var myList = new List<int>();
+
+            myList.Add(2);
+            myList.Add(2);
+            myList.Add(7);
+            myList.Add(8);            
+            Assert.Throws<ArgumentOutOfRangeException>(() => myList.RemoveAt(5));
 
         }
 
@@ -154,17 +180,21 @@ namespace CRUD
         }
 
         [Fact]
-        public void TestCopyTo2()
+        public void TestCopyToNullArray()
         {
-            var myList = new List<string> { "alin", "mihai", "alex", "pedro" };
+            var myList = new List<int> { 9, 3, 4, 6 };
 
-            string[] array = new string[myList.Count];
-            myList.CopyTo(array, 0);
+            int[] array = null;
+            Assert.Throws<ArgumentNullException>(() => myList.CopyTo(array, 0));
+        }
 
-            Assert.Equal("alin", array[0].ToString());
-            Assert.Equal("mihai", array[1].ToString());
-            Assert.Equal("alex", array[2].ToString());
-            Assert.Equal("pedro", array[3].ToString());
+        [Fact]
+        public void TestCopyToArrayIndexLessThan0()
+        {
+            var myList = new List<int> { 9, 3, 4, 6 };
+
+            int[] array = new int[myList.Count];
+            Assert.Throws<ArgumentOutOfRangeException>(() => myList.CopyTo(array, -2));
         }
     }
 }

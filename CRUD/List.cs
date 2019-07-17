@@ -9,6 +9,7 @@ namespace CRUD
     {
         protected const int ArraySize = 5;
         protected const int ResizeLength = 2;
+        private const string IndexOutOfRangeMessage = "this index is out of bounds";
         private int counter;
         private T[] classArray;
 
@@ -24,8 +25,25 @@ namespace CRUD
 
         public virtual T this[int index]
         {
-            get => classArray[index];
-            set => classArray[index] = value;
+            get
+            {
+                if (index < 0 || index > Count)
+                {
+                    throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
+                }
+
+                return classArray[index];
+            }
+
+            set
+            {
+                if (index < 0 || index > Count)
+                {
+                    throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
+                }
+
+                classArray[index] = value;
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -69,6 +87,11 @@ namespace CRUD
 
         public virtual void Insert(int index, T item)
         {
+            if (index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
+            }
+
             index++;
             ResizeArray();
             for (int i = counter; i >= index; i--)
@@ -86,6 +109,11 @@ namespace CRUD
 
         public void RemoveAt(int index)
         {
+            if (index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException(index + IndexOutOfRangeMessage);
+            }
+
             for (int i = index; i < counter - 1; i++)
             {
                 classArray[i] = classArray[i + 1];
@@ -102,6 +130,21 @@ namespace CRUD
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            if (array is null)
+            {
+                throw new ArgumentNullException(nameof(array), "array is null");
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(arrayIndex + IndexOutOfRangeMessage);
+            }
+
+            if (Count > array.Length)
+            {
+                throw new ArgumentException(array.Length + " number of list elements are greater than array length");
+            }
+
             int j = arrayIndex;
             for (int i = 0; i < array.Length; i++)
             {

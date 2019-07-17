@@ -9,7 +9,7 @@ namespace CRUD
     {
         protected const int ArraySize = 5;
         protected const int ResizeLength = 2;
-        private const string IndexOutOfRangeMessage = "this index is out of bounds";
+
         private int counter;
         private T[] classArray;
 
@@ -119,7 +119,7 @@ namespace CRUD
 
             if (array is null)
             {
-                throw new ArgumentNullException(nameof(array), "array is null");
+                throw new ArgumentNullException(nameof(array), " array is null");
             }
 
             if (Count > array.Length)
@@ -142,6 +142,7 @@ namespace CRUD
 
         private void CheckForOutOfBoundsException(int index)
         {
+            const string IndexOutOfRangeMessage = "this index is out of bounds";
             if (index >= 0 && index <= Count)
             {
                 return;

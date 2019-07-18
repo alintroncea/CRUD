@@ -21,7 +21,7 @@ namespace CRUD
 
         public int Count => counter;
 
-        public bool IsReadOnly => false;
+        public bool IsReadOnly => true;
 
         public virtual T this[int index]
         {
@@ -33,7 +33,12 @@ namespace CRUD
             }
 
             set
-            {
+                {
+                if (IsReadOnly)
+                {
+                    return;
+                }
+
                 CheckForOutOfBoundsException(index);
                 classArray[index] = value;
             }
@@ -80,6 +85,11 @@ namespace CRUD
 
         public virtual void Insert(int index, T item)
         {
+            if (IsReadOnly)
+            {
+                return;
+            }
+
             CheckForOutOfBoundsException(index);
             index++;
             ResizeArray();
@@ -93,11 +103,21 @@ namespace CRUD
 
         public void Clear()
         {
+            if (IsReadOnly)
+            {
+                return;
+            }
+
             counter = 0;
         }
 
         public void RemoveAt(int index)
         {
+            if (IsReadOnly)
+            {
+                return;
+            }
+
             CheckForOutOfBoundsException(index);
             for (int i = index; i < counter - 1; i++)
             {

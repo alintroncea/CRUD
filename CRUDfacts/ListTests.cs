@@ -79,7 +79,7 @@ namespace CRUD
             myList.Add(2);
             myList.Add(4);
             myList.Add(7);
-            myList.Add(8);            
+            myList.Add(8);
             Assert.Throws<ArgumentOutOfRangeException>(() => myList.Insert(-1, 14));
 
         }
@@ -112,7 +112,7 @@ namespace CRUD
             Assert.Equal("7", myList[1].ToString());
 
         }
-       
+
         [Fact]
         public void TestRemoveAt()
         {
@@ -135,7 +135,7 @@ namespace CRUD
             myList.Add(2);
             myList.Add(2);
             myList.Add(7);
-            myList.Add(8);            
+            myList.Add(8);
             Assert.Throws<ArgumentOutOfRangeException>(() => myList.RemoveAt(5));
 
         }
@@ -195,6 +195,27 @@ namespace CRUD
 
             int[] array = new int[myList.Count];
             Assert.Throws<ArgumentOutOfRangeException>(() => myList.CopyTo(array, -2));
+        }
+
+        [Fact]
+        public void TestIsReadOnly()
+        {
+            var myList = new List<int> { 9, 3, 2, 5, 7 };
+
+            Assert.Equal("9", myList[0].ToString());
+            Assert.Equal("3", myList[1].ToString());
+            Assert.Equal("2", myList[2].ToString());
+            Assert.Equal("5", myList[3].ToString());
+            Assert.Equal("7", myList[4].ToString());
+            myList.IsReadOnly = true;
+            myList.Add(4);
+            Assert.Throws<IndexOutOfRangeException>(() => myList[5]);
+            myList.RemoveAt(1);
+            Assert.Equal("3", myList[1].ToString());
+            myList.IsReadOnly = false;
+            Assert.True(myList.IsReadOnly);
+            myList.Clear();
+            Assert.Equal("5", myList.Count.ToString());
         }
     }
 }

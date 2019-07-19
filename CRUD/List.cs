@@ -7,21 +7,36 @@ namespace CRUD
 {
     public class List<T> : IList<T>
     {
-        protected const int ArraySize = 5;
+        protected const int ListSize = 5;
         protected const int ResizeLength = 2;
-
+        private bool isReadOnlyHasBeenModified;
+        private bool isReadOnly;
         private int counter;
-        private T[] classArray;
+        private T[] classList;
 
         public List()
         {
             counter = 0;
-            classArray = new T[ArraySize];
+            classList = new T[ListSize];
         }
 
         public int Count => counter;
 
-        public bool IsReadOnly => true;
+        public bool IsReadOnly
+        {
+            get => isReadOnly;
+
+            set
+                {
+                if (isReadOnlyHasBeenModified)
+                {
+                    return;
+                }
+
+                isReadOnly = value;
+                isReadOnlyHasBeenModified = true;
+            }
+        }
 
         public virtual T this[int index]
         {
@@ -29,18 +44,18 @@ namespace CRUD
             {
                 CheckForOutOfBoundsException(index);
 
-                return classArray[index];
+                return classList[index];
             }
 
             set
-                {
+            {
                 if (IsReadOnly)
                 {
                     return;
                 }
 
                 CheckForOutOfBoundsException(index);
-                classArray[index] = value;
+                classList[index] = value;
             }
         }
 
@@ -48,7 +63,7 @@ namespace CRUD
         {
             for (int i = 0; i < Count; i++)
             {
-                yield return classArray[i];
+                yield return classList[i];
             }
         }
 
@@ -59,12 +74,17 @@ namespace CRUD
 
         public virtual void Add(T item)
         {
-            if (counter >= classArray.Length)
+            if (IsReadOnly)
+            {
+                return;
+            }
+
+            if (counter >= classList.Length)
             {
                 ResizeArray();
             }
 
-            classArray[counter] = item;
+            classList[counter] = item;
             counter++;
         }
 
@@ -74,7 +94,7 @@ namespace CRUD
         {
             for (int i = 0; i < counter; i++)
             {
-                if (classArray[i].Equals(item))
+                if (classList[i].Equals(item))
                 {
                     return i;
                 }
@@ -95,10 +115,10 @@ namespace CRUD
             ResizeArray();
             for (int i = counter; i >= index; i--)
             {
-                classArray[i] = classArray[i - 1];
+                classList[i] = classList[i - 1];
             }
 
-            classArray[index - 1] = item;
+            classList[index - 1] = item;
         }
 
         public void Clear()
@@ -121,7 +141,7 @@ namespace CRUD
             CheckForOutOfBoundsException(index);
             for (int i = index; i < counter - 1; i++)
             {
-                classArray[i] = classArray[i + 1];
+                classList[i] = classList[i + 1];
             }
 
             counter--;
@@ -150,14 +170,14 @@ namespace CRUD
             int j = arrayIndex;
             for (int i = 0; i < array.Length; i++)
             {
-                array.SetValue(classArray[i], j);
+                array.SetValue(classList[i], j);
                 j++;
             }
         }
 
         protected void ResizeArray()
         {
-            Array.Resize(ref classArray, classArray.Length * ResizeLength);
+            Array.Resize(ref classList, classList.Length * ResizeLength);
         }
 
         private void CheckForOutOfBoundsException(int index)

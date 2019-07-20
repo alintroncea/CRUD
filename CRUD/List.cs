@@ -30,7 +30,7 @@ namespace CRUD
                 {
                 if (isReadOnlyHasBeenModified)
                 {
-                    return;
+                    throw new UnauthorizedAccessException("the list is read only");
                 }
 
                 isReadOnly = value;
@@ -49,11 +49,7 @@ namespace CRUD
 
             set
             {
-                if (IsReadOnly)
-                {
-                    return;
-                }
-
+                CheckForReadOnly();
                 CheckForOutOfBoundsException(index);
                 classList[index] = value;
             }
@@ -74,11 +70,7 @@ namespace CRUD
 
         public virtual void Add(T item)
         {
-            if (IsReadOnly)
-            {
-                return;
-            }
-
+            CheckForReadOnly();
             if (counter >= classList.Length)
             {
                 ResizeArray();
@@ -105,11 +97,7 @@ namespace CRUD
 
         public virtual void Insert(int index, T item)
         {
-            if (IsReadOnly)
-            {
-                return;
-            }
-
+            CheckForReadOnly();
             CheckForOutOfBoundsException(index);
             index++;
             ResizeArray();
@@ -123,21 +111,13 @@ namespace CRUD
 
         public void Clear()
         {
-            if (IsReadOnly)
-            {
-                return;
-            }
-
+            CheckForReadOnly();
             counter = 0;
         }
 
         public void RemoveAt(int index)
         {
-            if (IsReadOnly)
-            {
-                return;
-            }
-
+            CheckForReadOnly();
             CheckForOutOfBoundsException(index);
             for (int i = index; i < counter - 1; i++)
             {
@@ -188,6 +168,16 @@ namespace CRUD
             }
 
             throw new ArgumentOutOfRangeException(index + "this index is out of bounds");
+        }
+
+        private void CheckForReadOnly()
+            {
+            if (!IsReadOnly)
+            {
+                return;
+            }
+
+            throw new UnauthorizedAccessException("the list is read only");
         }
     }
 }

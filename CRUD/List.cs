@@ -30,7 +30,7 @@ namespace CRUD
                 {
                 if (isReadOnlyHasBeenModified)
                 {
-                    throw new UnauthorizedAccessException("the list is read only");
+                    throw new NotSupportedException("the list is read only");
                 }
 
                 isReadOnly = value;
@@ -177,7 +177,7 @@ namespace CRUD
                 return;
             }
 
-            throw new UnauthorizedAccessException("the list is read only");
+            throw new NotSupportedException("the list is read only");
         }
     }
 }

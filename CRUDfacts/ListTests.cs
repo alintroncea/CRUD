@@ -208,13 +208,13 @@ namespace CRUD
             Assert.Equal("5", myList[3].ToString());
             Assert.Equal("7", myList[4].ToString());
             myList.IsReadOnly = true;
-            myList.Add(4);
+            Assert.Throws<NotSupportedException>(() => myList.Add(4));
             Assert.Throws<IndexOutOfRangeException>(() => myList[5]);
-            myList.RemoveAt(1);
+            Assert.Throws<NotSupportedException>(() => myList.Remove(1));
             Assert.Equal("3", myList[1].ToString());
-            myList.IsReadOnly = false;
+            Assert.Throws<NotSupportedException>(() => myList.IsReadOnly = false);
             Assert.True(myList.IsReadOnly);
-            myList.Clear();
+            Assert.Throws<NotSupportedException>(() => myList.Clear());
             Assert.Equal("5", myList.Count.ToString());
         }
     }

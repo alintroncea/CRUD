@@ -27,7 +27,7 @@ namespace CRUD
             get => isReadOnly;
 
             set
-                {
+            {
                 if (isReadOnlyHasBeenModified)
                 {
                     throw new NotSupportedException("the list is read only");
@@ -171,7 +171,7 @@ namespace CRUD
         }
 
         private void CheckForReadOnly()
-            {
+        {
             if (!IsReadOnly)
             {
                 return;

@@ -122,7 +122,8 @@ namespace CRUD
             {
                 3,5,4,9,8,3
             };
-            intList.Remove(3);
+            LinkedListNode<int> nodeToBeRemoved = intList.Find(3);
+            intList.Remove(nodeToBeRemoved);
 
             Assert.Equal(new int[] { 5, 4, 9, 8, 3 }, intList);
 
@@ -131,8 +132,8 @@ namespace CRUD
                1
             };
 
-            intList.Remove(1);
-
+            Assert.True(intList.Remove(1));
+            Assert.False(intList.Remove(3));
             Assert.Empty(intList);
         }
 
@@ -144,9 +145,9 @@ namespace CRUD
                 "Car", "Bike", "Boat"
             };
             Assert.Equal(3, stringList.Count);
-            stringList.Remove("Bike");
+            stringList.Remove(stringList.Find("Car"));
             Assert.Equal(2, stringList.Count);
-            Assert.Equal(new string[] { "Car", "Boat" }, stringList);
+            Assert.Equal(new string[] { "Bike", "Boat" }, stringList);
         }
 
 
@@ -158,7 +159,7 @@ namespace CRUD
                 "Car", "Bike", "Boat"
             };
 
-            Assert.False(stringList.Remove("Truck"));
+            Assert.Throws<ArgumentNullException>(() => stringList.Remove("Truck"));
         }
 
         [Fact]
@@ -194,7 +195,34 @@ namespace CRUD
             Assert.Equal(new string[] { "Train", "Motorbike", "Skateboard" }, stringList);
             stringList.RemoveLast();
             Assert.Equal(2, stringList.Count);
-            Assert.Equal(new string[] { "Train", "Motorbike"}, stringList);
+            Assert.Equal(new string[] { "Train", "Motorbike" }, stringList);
+        }
+
+        [Fact]
+        public void TestContains()
+        {
+            LinkedList<string> stringList = new LinkedList<string>();
+            stringList.Add("Train");
+            stringList.Add("Motorbike");
+            stringList.Add("Skateboard");
+
+            Assert.True(stringList.Contains("Train"));
+            Assert.False(stringList.Contains("Boat"));
+
+        }
+
+        [Fact]
+        public void TestClear()
+        {
+            LinkedList<string> stringList = new LinkedList<string>();
+            stringList.Add("Train");
+            stringList.Add("Motorbike");
+            stringList.Add("Skateboard");
+            stringList.Clear();
+
+            Assert.Equal(0, stringList.Count);
+            Assert.Empty(stringList);
+
         }
     }
 }

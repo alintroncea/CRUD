@@ -75,26 +75,23 @@ namespace CRUD
 
         public bool Remove(T item)
         {
-            try
-            {
-                Remove(new LinkedListNode<T>(item));
-            }
-            catch (ArgumentNullException)
-            {
-                return false;
-            }
-
+            LinkedListNode<T> node = Find(item);
+            CheckForNullArgument(node);
+            Remove(node);
             return true;
         }
 
         public void Remove(LinkedListNode<T> node)
         {
             CheckForNullArgument(node);
-            LinkedListNode<T> nodeToBeRemoved = Find(node.Data);
-            CheckForNullArgument(nodeToBeRemoved);
+            CheckIfNodeBelongsToList(node);
+            if (node == root)
+            {
+                throw new NotSupportedException();
+            }
 
-            nodeToBeRemoved.Previous.Next = nodeToBeRemoved.Next;
-            nodeToBeRemoved.Next.Previous = nodeToBeRemoved.Previous;
+            node.Previous.Next = node.Next;
+            node.Next.Previous = node.Previous;
             Count--;
         }
 
@@ -125,12 +122,14 @@ namespace CRUD
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            Count = 0;
+            root.Next = root;
+            root.Previous = root;
         }
 
         public bool Contains(T item)
         {
-            throw new NotImplementedException();
+            return Find(item) != null;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -164,6 +163,16 @@ namespace CRUD
         private void CheckForInvalidOperationException()
         {
             if (Count != 0)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException();
+        }
+
+        private void CheckIfNodeBelongsToList(LinkedListNode<T> node)
+        {
+            if (!(node.Next is null) && !(node.Previous is null))
             {
                 return;
             }

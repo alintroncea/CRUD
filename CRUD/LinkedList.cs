@@ -13,9 +13,36 @@ namespace CRUD
             root = new LinkedListNode<T>(default);
             root.Next = root;
             root.Previous = root;
+            root.ChangeOwner(this);
         }
 
         public int Count { get; private set; }
+
+        public LinkedListNode<T> First
+        {
+            get
+            {
+                if (Count == 0)
+                {
+                    return null;
+                }
+
+                return root.Next;
+            }
+        }
+
+        public LinkedListNode<T> Last
+        {
+            get
+            {
+                if (Count == 0)
+                {
+                    return null;
+                }
+
+                return root.Previous;
+            }
+        }
 
 #pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
         public bool IsReadOnly => throw new NotImplementedException();
@@ -55,6 +82,8 @@ namespace CRUD
         {
             CheckForNullArgument(specifiedNode);
             CheckForNullArgument(nodeToInsert);
+
+            nodeToInsert.ChangeOwner(this);
 
             nodeToInsert.Previous = specifiedNode;
             nodeToInsert.Next = specifiedNode.Next;
@@ -107,11 +136,24 @@ namespace CRUD
             Remove(root.Previous);
         }
 
-        public LinkedListNode<T> Find(T specifiedNode)
+        public LinkedListNode<T> Find(T item)
         {
             for (var current = root.Next; current != root; current = current.Next)
             {
-                if (specifiedNode.Equals(current.Data))
+                if (item.Equals(current.Data))
+                {
+                    return current;
+                }
+            }
+
+            return null;
+        }
+
+        public LinkedListNode<T> FindLast(T item)
+        {
+            for (var current = root.Previous; current != root; current = current.Previous)
+            {
+                if (item.Equals(current.Data))
                 {
                     return current;
                 }
@@ -134,7 +176,22 @@ namespace CRUD
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            if (array is null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(array));
+            }
+
+            int j = arrayIndex;
+            foreach (var current in this)
+            {
+                array.SetValue(current, j);
+                j++;
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -172,7 +229,12 @@ namespace CRUD
 
         private void CheckIfNodeBelongsToList(LinkedListNode<T> node)
         {
-            if (!(node.Next is null) && !(node.Previous is null))
+            if (node.List == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (node.List.Equals(this))
             {
                 return;
             }

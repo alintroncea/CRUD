@@ -116,6 +116,19 @@ namespace CRUD
         }
 
         [Fact]
+        public void TestFindLast()
+        {
+            LinkedList<int> intList = new LinkedList<int>
+            {
+                4,5,4,3,8,3
+            };
+
+            LinkedListNode<int> node = intList.FindLast(3);
+            Assert.Equal(8, node.Previous.Data);
+            Assert.Equal(4, node.Next.Next.Data);
+        }
+
+        [Fact]
         public void TestRemoveOnIntList()
         {
             LinkedList<int> intList = new LinkedList<int>
@@ -133,7 +146,6 @@ namespace CRUD
             };
 
             Assert.True(intList.Remove(1));
-            Assert.False(intList.Remove(3));
             Assert.Empty(intList);
         }
 
@@ -223,6 +235,69 @@ namespace CRUD
             Assert.Equal(0, stringList.Count);
             Assert.Empty(stringList);
 
+        }
+
+        [Fact]
+        public void TestFirst()
+        {
+            LinkedList<string> stringList = new LinkedList<string>();
+            stringList.Add("Train");
+            stringList.Add("Motorbike");
+            stringList.Add("Skateboard");
+
+            Assert.Equal("Train", stringList.First.Data);
+            stringList.Clear();
+            Assert.Equal(null, stringList.First);
+
+        }
+
+        [Fact]
+        public void TestLast()
+        {
+            LinkedList<string> stringList = new LinkedList<string>();
+            stringList.Add("Train");
+            stringList.Add("Motorbike");
+            stringList.Add("Skateboard");
+
+            Assert.Equal("Skateboard", stringList.Last.Data);
+            stringList.Clear();
+            Assert.Equal(null, stringList.Last);
+
+        }
+
+        [Fact]
+        public void TestIfNodeBelongsToList()
+        {
+            var stringList = new LinkedList<string>
+            {
+                "Train",
+                "Motorbike",
+                "Skateboard"
+            };
+
+            var secondList = new LinkedList<string>
+            {
+                "Boat",
+                "Car"
+            };
+
+            Assert.Throws<InvalidOperationException>(() => stringList.Remove(secondList.First));
+
+        }
+
+        [Fact]
+        public void TestCopyTo()
+        {
+            var stringList = new LinkedList<string>
+            {
+                "Train",
+                "Motorbike",
+                "Skateboard"
+            };
+
+            string[] array = new string[stringList.Count];
+            stringList.CopyTo(array, 0);
+            Assert.Equal(new string[] { "Train", "Motorbike", "Skateboard" }, array);
         }
     }
 }

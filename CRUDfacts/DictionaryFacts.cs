@@ -100,11 +100,31 @@ namespace CRUD
             dictionary.Remove("b");
             Assert.Equal(new KeyValuePair<string, int>[]
             { new KeyValuePair<string, int>("a", 1),
-              new KeyValuePair<string, int>(null, 0),
               new KeyValuePair<string, int>("c", 10),
               new KeyValuePair<string, int>("d", 7),
             },
             dictionary);
+
+        }
+
+
+        [Fact]
+        public void TestEnumerator2()
+        {
+            Dictionary<int, int> dictionary = new Dictionary<int, int>();
+            dictionary.Add(1, 3);
+            dictionary.Add(2, 7);
+            dictionary.Add(10, 4);
+            dictionary.Add(7, 9);
+
+            dictionary.Remove(1);
+            Assert.Equal(new KeyValuePair<int, int>[]
+           { new KeyValuePair<int, int>(2, 7),
+              new KeyValuePair<int, int>(10, 4),
+              new KeyValuePair<int, int>(7, 9),
+           },
+           dictionary);
+
 
         }
     }

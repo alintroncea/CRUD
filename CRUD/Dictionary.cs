@@ -70,6 +70,7 @@ namespace CRUD
 
             Count++;
             elements[index] = new Element<Tkey, TValue>(key, value, buckets[bucketIndex]);
+            elements[index].IsRemoved = false;
             buckets[bucketIndex] = index;
         }
 
@@ -126,7 +127,7 @@ namespace CRUD
         {
             for (int i = 0; i < elements.Length; i++)
             {
-                if (elements[i] != null && elements[i].Key != default)
+                if (elements[i]?.IsRemoved == false)
                 {
                     yield return new KeyValuePair<Tkey, TValue>(elements[i].Key, elements[i].Value);
                 }
@@ -168,6 +169,7 @@ namespace CRUD
             element.Key = default;
             element.Value = default;
             element.NextIndex = freeIndex;
+            element.IsRemoved = true;
             freeIndex = index;
             Count--;
         }

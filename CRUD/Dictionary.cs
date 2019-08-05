@@ -12,29 +12,51 @@ namespace CRUD
         private readonly Element<Tkey, TValue>[] elements;
         private readonly int dictionarySize = 5;
         private readonly int[] buckets;
+        private int freeIndex = -1;
 
         public Dictionary()
         {
             buckets = new int[dictionarySize];
             Array.Fill(buckets, -1);
-
             elements = new Element<Tkey, TValue>[dictionarySize];
         }
 
-#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
-        public ICollection<Tkey> Keys => throw new NotImplementedException();
+        public ICollection<Tkey> Keys
+        {
+            get
+            {
+                Tkey[] tkeys = new Tkey[Count];
+                for (int i = 0; i < Count; i++)
+                {
+                    tkeys[i] = elements[i].Key;
+                }
 
-        public ICollection<TValue> Values => throw new NotImplementedException();
+                return tkeys;
+            }
+        }
+
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                TValue[] tvalues = new TValue[Count];
+                for (int i = 0; i < Count; i++)
+                {
+                    tvalues[i] = elements[i].Value;
+                }
+
+                return tvalues;
+            }
+        }
 
         public int Count { get; private set; }
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => true;
 
-        private int FreeIndex { get; set; } = -1;
-
+#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
         public TValue this[Tkey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
 #pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
+
         public void Add(Tkey key, TValue value)
         {
             CheckIfKeyIsNull(key);
@@ -44,52 +66,33 @@ namespace CRUD
             }
 
             int bucketIndex = GetBucketIndex(key);
-            elements[Count] = new Element<Tkey, TValue>(key, value, buckets[bucketIndex]);
-            buckets[bucketIndex] = Count;
+            int index = FindFreeIndex();
+
             Count++;
-        }
-
-        public Element<Tkey, TValue>[] ShowElements()
-        {
-            return elements;
-        }
-
-        public void ShowBuckets()
-        {
-            for (int i = 0; i < buckets.Length; i++)
-            {
-                Console.WriteLine(buckets[i]);
-            }
+            elements[index] = new Element<Tkey, TValue>(key, value, buckets[bucketIndex]);
+            buckets[bucketIndex] = index;
         }
 
         public void Add(KeyValuePair<Tkey, TValue> item)
         {
-            throw new NotImplementedException();
+            Add(item.Key, item.Value);
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            Count = 0;
+            Array.Fill(buckets, -1);
         }
 
         public bool Contains(KeyValuePair<Tkey, TValue> item)
         {
-            throw new NotImplementedException();
+            return ContainsKey(item.Key);
         }
 
         public bool ContainsKey(Tkey key)
         {
             CheckIfKeyIsNull(key);
-
-            for (int index = buckets[GetBucketIndex(key)]; index != -1; index = elements[index].NextIndex)
-            {
-                if (elements[index].Key.Equals(key))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return FindElementByKey(key, out int previous) != -1;
         }
 
         public void CopyTo(KeyValuePair<Tkey, TValue>[] array, int arrayIndex)
@@ -97,56 +100,37 @@ namespace CRUD
             throw new NotImplementedException();
         }
 
-        public IEnumerator<KeyValuePair<Tkey, TValue>> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool Remove(Tkey key)
         {
-            if (!ContainsKey(key))
+            var index = FindElementByKey(key, out int previousElementIndex);
+            if (index == -1)
             {
                 return false;
             }
 
-            // calculating the key with GetHashCode
-            int bucketValue = buckets[GetBucketIndex(key)];
-            var firstBucketElement = elements[bucketValue];
-
-#pragma warning disable RCS1208 // Reduce if nesting.
-            if (firstBucketElement.Key.Equals(key))
-#pragma warning restore RCS1208 // Reduce if nesting.
-            {
-                buckets[bucketValue] = firstBucketElement.NextIndex;
-                DeleteElement(firstBucketElement);
-                firstBucketElement.NextIndex = FreeIndex;
-                FreeIndex = bucketValue;
-                return true;
-            }
-
-            for (int index = buckets[GetBucketIndex(key)]; index != -1; index = elements[index].NextIndex)
-            {
-                if (elements[index].Key.Equals(key))
-                {
-                    var elementToBeRemoved = elements[index];
-                    DeleteElement(elementToBeRemoved);
-                    elementToBeRemoved.NextIndex = FreeIndex;
-                    FreeIndex = index;
-                    return true;
-                }
-            }
-
-            return false;
+            DeleteElement(index, previousElementIndex, GetBucketIndex(key));
+            return true;
         }
 
         public bool Remove(KeyValuePair<Tkey, TValue> item)
         {
-            throw new NotImplementedException();
+            return Remove(item.Key);
         }
 
         public bool TryGetValue(Tkey key, out TValue value)
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerator<KeyValuePair<Tkey, TValue>> GetEnumerator()
+        {
+            for (int i = 0; i < elements.Length; i++)
+            {
+                if (elements[i] != null && elements[i].Key != default)
+                {
+                    yield return new KeyValuePair<Tkey, TValue>(elements[i].Key, elements[i].Value);
+                }
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -169,11 +153,55 @@ namespace CRUD
             return Math.Abs(key.GetHashCode() % dictionarySize);
         }
 
-        private void DeleteElement(Element<Tkey, TValue> element)
+        private void DeleteElement(int index, int previousElementIndex, int bucketIndex)
         {
+            var element = elements[index];
+            if (index == previousElementIndex)
+            {
+                buckets[bucketIndex] = element.NextIndex;
+            }
+            else
+            {
+                elements[previousElementIndex].NextIndex = element.NextIndex;
+            }
+
             element.Key = default;
             element.Value = default;
-            element.NextIndex = -1;
+            element.NextIndex = freeIndex;
+            freeIndex = index;
+            Count--;
+        }
+
+        private int FindFreeIndex()
+        {
+            if (freeIndex == -1)
+            {
+                return Count;
+            }
+
+            var index = freeIndex;
+            freeIndex = elements[freeIndex].NextIndex;
+
+            return index;
+        }
+
+        private int FindElementByKey(Tkey key, out int previousElementIndex)
+        {
+            int bucketIndex = GetBucketIndex(key);
+
+            previousElementIndex = buckets[bucketIndex];
+
+            for (int index = buckets[bucketIndex]; index != -1; index = elements[index].NextIndex)
+            {
+                if (elements[index].Key.Equals(key))
+                {
+                    return index;
+                }
+
+                previousElementIndex = index;
+            }
+
+            return -1;
         }
     }
 }

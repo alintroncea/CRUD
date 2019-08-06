@@ -71,10 +71,8 @@ namespace CRUD
             dictionary.Add(2, "b");
             dictionary.Add(10, "c");
 
-            dictionary.Remove(10);
-
             var keys = dictionary.Keys;
-            Assert.Equal(new int[] { 1, 2 }, keys);
+            Assert.Equal(new int[] { 1, 2, 10 }, keys);
         }
 
         [Fact]
@@ -118,14 +116,129 @@ namespace CRUD
             dictionary.Add(7, 9);
 
             dictionary.Remove(1);
+            dictionary.Remove(7);
             Assert.Equal(new KeyValuePair<int, int>[]
            { new KeyValuePair<int, int>(2, 7),
               new KeyValuePair<int, int>(10, 4),
-              new KeyValuePair<int, int>(7, 9),
            },
            dictionary);
+        }
 
+        [Fact]
+        public void TestTryGetValue()
+        {
+            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(10, "c");
 
+            string value = string.Empty;
+            Assert.True(dictionary.TryGetValue(1, out value));
+            Assert.Equal("a", value);
+            Assert.False(dictionary.TryGetValue(3, out value));
+            Assert.Equal(null, value);
+        }
+
+        [Fact]
+        public void TestTryGetValue2()
+        {
+            Dictionary<string, int> dictionary = new Dictionary<string, int>();
+            dictionary.Add("a", 12);
+            dictionary.Add("x", 9);
+            dictionary.Add("d", 3);
+
+            int value;
+            Assert.True(dictionary.TryGetValue("x", out value));
+            Assert.Equal(9, value);
+            Assert.False(dictionary.TryGetValue("w", out value));
+            Assert.Equal(0, value);
+        }
+
+        [Fact]
+        public void TestCopyTo()
+        {
+            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+
+            KeyValuePair<int, string>[] array = new KeyValuePair<int, string>[dictionary.Count];
+            dictionary.CopyTo(array, 0);
+
+            Assert.Equal(new KeyValuePair<int, string>[]
+            {
+                new KeyValuePair<int,string>(1,"a"),
+                new KeyValuePair<int,string>(2,"b")
+            }, array);
+
+        }
+
+        [Fact]
+        public void TestCopyTo2()
+        {
+            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Remove(1);
+
+            KeyValuePair<int, string>[] array = new KeyValuePair<int, string>[dictionary.Count];
+            dictionary.CopyTo(array, 0);
+
+            Assert.Equal(new KeyValuePair<int, string>[]
+            {
+                new KeyValuePair<int,string>(2,"b")
+            }, array);
+
+        }
+
+        [Fact]
+        public void TestCopyToNullArray()
+        {
+            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Remove(1);
+
+            KeyValuePair<int, string>[] array = null;
+            Assert.Throws<ArgumentNullException>(() => dictionary.CopyTo(array, 0));          
+        }
+
+        [Fact]
+        public void TestCopyToWhenIndexIsLessThan0()
+        {
+
+            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Remove(1);
+
+            KeyValuePair<int, string>[] array = new KeyValuePair<int, string>[dictionary.Count];
+            Assert.Throws<ArgumentOutOfRangeException>(() => dictionary.CopyTo(array, -1));
+        }
+
+        [Fact]
+
+        public void TestGetValueByKey()
+        {
+            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+
+            Assert.Equal("a", dictionary[1]);
+            Assert.Equal("b", dictionary[2]);
+            Assert.Equal(null, dictionary[3]);
+        }
+
+        [Fact]
+
+        public void TestSetValue()
+        {
+            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary[2] = "idk";
+            Assert.Equal("a", dictionary[1]);
+            Assert.Equal("idk", dictionary[2]);
+            Assert.Equal(null, dictionary[3]);
         }
     }
 }

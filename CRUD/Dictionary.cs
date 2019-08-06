@@ -26,11 +26,7 @@ namespace CRUD
             get
             {
                 Tkey[] tkeys = new Tkey[Count];
-                for (int i = 0; i < Count; i++)
-                {
-                    tkeys[i] = elements[i].Key;
-                }
-
+                GetKeysAndValues(tkeys, null);
                 return tkeys;
             }
         }
@@ -40,11 +36,7 @@ namespace CRUD
             get
             {
                 TValue[] tvalues = new TValue[Count];
-                for (int i = 0; i < Count; i++)
-                {
-                    tvalues[i] = elements[i].Value;
-                }
-
+                GetKeysAndValues(null, tvalues);
                 return tvalues;
             }
         }
@@ -53,9 +45,15 @@ namespace CRUD
 
         public bool IsReadOnly => true;
 
-#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
-        public TValue this[Tkey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-#pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
+        public TValue this[Tkey key]
+        {
+            get => GetValueByKey(key);
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public void Add(Tkey key, TValue value)
         {
@@ -70,7 +68,6 @@ namespace CRUD
 
             Count++;
             elements[index] = new Element<Tkey, TValue>(key, value, buckets[bucketIndex]);
-            elements[index].IsRemoved = false;
             buckets[bucketIndex] = index;
         }
 
@@ -98,7 +95,22 @@ namespace CRUD
 
         public void CopyTo(KeyValuePair<Tkey, TValue>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            if (array is null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(array));
+            }
+
+            int j = arrayIndex;
+            foreach (var current in this)
+            {
+                array.SetValue(current, j);
+                j++;
+            }
         }
 
         public bool Remove(Tkey key)
@@ -120,16 +132,32 @@ namespace CRUD
 
         public bool TryGetValue(Tkey key, out TValue value)
         {
-            throw new NotImplementedException();
+            CheckIfKeyIsNull(key);
+            foreach (var element in elements)
+            {
+                if (element?.Key.Equals(key) == true)
+                {
+                    value = element.Value;
+                    return true;
+                }
+            }
+
+            value = default;
+            return false;
         }
 
         public IEnumerator<KeyValuePair<Tkey, TValue>> GetEnumerator()
         {
-            for (int i = 0; i < elements.Length; i++)
+            int freeCount = 0;
+            for (int i = 0; i < Count + freeCount; i++)
             {
-                if (elements[i]?.IsRemoved == false)
+                if (!IsFree(i))
                 {
                     yield return new KeyValuePair<Tkey, TValue>(elements[i].Key, elements[i].Value);
+                }
+                else
+                {
+                    freeCount++;
                 }
             }
         }
@@ -147,6 +175,19 @@ namespace CRUD
             }
 
             throw new ArgumentNullException(nameof(key));
+        }
+
+        private bool IsFree(int index)
+        {
+            for (int i = freeIndex; i != -1; i = elements[i].NextIndex)
+            {
+                if (i == index)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private int GetBucketIndex(Tkey key)
@@ -169,7 +210,6 @@ namespace CRUD
             element.Key = default;
             element.Value = default;
             element.NextIndex = freeIndex;
-            element.IsRemoved = true;
             freeIndex = index;
             Count--;
         }
@@ -204,6 +244,44 @@ namespace CRUD
             }
 
             return -1;
+        }
+
+        private void GetKeysAndValues(Tkey[] tkeys, TValue[] tvalues)
+        {
+            int counter = 0;
+            foreach (var element in elements)
+            {
+                if (element != null)
+                {
+                    if (tkeys != null)
+                    {
+                        tkeys[counter] = element.Key;
+                    }
+
+                    if (tvalues != null)
+                    {
+                        tvalues[counter] = element.Value;
+                    }
+
+                    counter++;
+                }
+            }
+        }
+
+        private TValue GetValueByKey(Tkey key)
+        {
+            CheckIfKeyIsNull(key);
+            int bucketIndex = GetBucketIndex(key);
+
+            for (int index = buckets[bucketIndex]; index != -1; index = elements[index].NextIndex)
+            {
+                if (elements[index].Key.Equals(key))
+                {
+                    return elements[index].Value;
+                }
+            }
+
+            return default;
         }
     }
 }

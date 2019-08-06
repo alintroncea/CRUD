@@ -18,7 +18,5 @@ namespace CRUD
         public TValue Value { get; set; }
 
         public int NextIndex { get; set; }
-
-        public bool IsRemoved { get; set; }
     }
 }

@@ -5,11 +5,9 @@ using System.Text;
 
 namespace CRUD
 {
-#pragma warning disable CA1715 // Identifiers should have correct prefix
-    public class Dictionary<Tkey, TValue> : IDictionary<Tkey, TValue>
-#pragma warning restore CA1715 // Identifiers should have correct prefix
+    public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private readonly Element<Tkey, TValue>[] elements;
+        private readonly Element<TKey, TValue>[] elements;
         private readonly int dictionarySize = 5;
         private readonly int[] buckets;
         private int freeIndex = -1;
@@ -20,15 +18,15 @@ namespace CRUD
         {
             buckets = new int[dictionarySize];
             Array.Fill(buckets, -1);
-            elements = new Element<Tkey, TValue>[dictionarySize];
+            elements = new Element<TKey, TValue>[dictionarySize];
         }
 
-        public ICollection<Tkey> Keys
+        public ICollection<TKey> Keys
         {
             get
             {
                 int counter = 0;
-                Tkey[] tkeys = new Tkey[Count];
+                TKey[] tkeys = new TKey[Count];
                 foreach (var current in this)
                 {
                     tkeys[counter++] = current.Key;
@@ -71,36 +69,23 @@ namespace CRUD
             }
         }
 
-        public TValue this[Tkey key]
+        public TValue this[TKey key]
         {
             get
             {
                 CheckIfKeyIsNull(key);
-                int index = FindElementByKey(key, out int previous);
-                if (index == -1)
-                {
-                    throw new KeyNotFoundException();
-                }
-
-                return elements[index].Value;
+                return elements[GetElementIndexByKey(key)].Value;
             }
 
             set
             {
                 CheckIfKeyIsNull(key);
                 CheckForReadOnly();
-                int index = FindElementByKey(key, out int previous);
-
-                if (index == -1)
-                {
-                    throw new KeyNotFoundException();
-                }
-
-                elements[index].Value = value;
+                elements[GetElementIndexByKey(key)].Value = value;
             }
         }
 
-        public void Add(Tkey key, TValue value)
+        public void Add(TKey key, TValue value)
         {
             CheckForReadOnly();
             CheckIfKeyIsNull(key);
@@ -113,11 +98,11 @@ namespace CRUD
             int index = FindFreeIndex();
 
             Count++;
-            elements[index] = new Element<Tkey, TValue>(key, value, buckets[bucketIndex]);
+            elements[index] = new Element<TKey, TValue>(key, value, buckets[bucketIndex]);
             buckets[bucketIndex] = index;
         }
 
-        public void Add(KeyValuePair<Tkey, TValue> item)
+        public void Add(KeyValuePair<TKey, TValue> item)
         {
             Add(item.Key, item.Value);
         }
@@ -129,18 +114,18 @@ namespace CRUD
             Array.Fill(buckets, -1);
         }
 
-        public bool Contains(KeyValuePair<Tkey, TValue> item)
+        public bool Contains(KeyValuePair<TKey, TValue> item)
         {
             return ContainsKey(item.Key);
         }
 
-        public bool ContainsKey(Tkey key)
+        public bool ContainsKey(TKey key)
         {
             CheckIfKeyIsNull(key);
             return FindElementByKey(key, out int previous) != -1;
         }
 
-        public void CopyTo(KeyValuePair<Tkey, TValue>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             CheckForReadOnly();
             if (array is null)
@@ -161,7 +146,7 @@ namespace CRUD
             }
         }
 
-        public bool Remove(Tkey key)
+        public bool Remove(TKey key)
         {
             CheckForReadOnly();
             var index = FindElementByKey(key, out int previousElementIndex);
@@ -174,12 +159,12 @@ namespace CRUD
             return true;
         }
 
-        public bool Remove(KeyValuePair<Tkey, TValue> item)
+        public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             return Remove(item.Key);
         }
 
-        public bool TryGetValue(Tkey key, out TValue value)
+        public bool TryGetValue(TKey key, out TValue value)
         {
             CheckIfKeyIsNull(key);
             int index = FindElementByKey(key, out int previous);
@@ -193,14 +178,14 @@ namespace CRUD
             return true;
         }
 
-        public IEnumerator<KeyValuePair<Tkey, TValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             int freeCount = 0;
             for (int i = 0; i < Count + freeCount; i++)
             {
                 if (!IsFree(i))
                 {
-                    yield return new KeyValuePair<Tkey, TValue>(elements[i].Key, elements[i].Value);
+                    yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
                 }
                 else
                 {
@@ -214,7 +199,7 @@ namespace CRUD
             return GetEnumerator();
         }
 
-        private void CheckIfKeyIsNull(Tkey key)
+        private void CheckIfKeyIsNull(TKey key)
         {
             if (key != null)
             {
@@ -237,7 +222,7 @@ namespace CRUD
             return false;
         }
 
-        private int GetBucketIndex(Tkey key)
+        private int GetBucketIndex(TKey key)
         {
             return Math.Abs(key.GetHashCode() % dictionarySize);
         }
@@ -274,7 +259,7 @@ namespace CRUD
             return index;
         }
 
-        private int FindElementByKey(Tkey key, out int previousElementIndex)
+        private int FindElementByKey(TKey key, out int previousElementIndex)
         {
             int bucketIndex = GetBucketIndex(key);
 
@@ -301,6 +286,17 @@ namespace CRUD
             }
 
             throw new NotSupportedException("the list is read only");
+        }
+
+        private int GetElementIndexByKey(TKey key)
+        {
+            var index = FindElementByKey(key, out int previous);
+            if (index == -1)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            return index;
         }
     }
 }

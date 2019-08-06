@@ -74,14 +74,14 @@ namespace CRUD
             get
             {
                 CheckIfKeyIsNull(key);
-                return elements[GetElementIndexByKey(key)].Value;
+                return elements[GetEelementIndex(key)].Value;
             }
 
             set
             {
                 CheckIfKeyIsNull(key);
                 CheckForReadOnly();
-                elements[GetElementIndexByKey(key)].Value = value;
+                elements[GetEelementIndex(key)].Value = value;
             }
         }
 
@@ -288,7 +288,7 @@ namespace CRUD
             throw new NotSupportedException("the list is read only");
         }
 
-        private int GetElementIndexByKey(TKey key)
+        private int GetEelementIndex(TKey key)
         {
             var index = FindElementByKey(key, out int previous);
             if (index == -1)

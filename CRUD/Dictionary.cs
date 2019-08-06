@@ -74,14 +74,29 @@ namespace CRUD
             get
             {
                 CheckIfKeyIsNull(key);
-                return elements[GetEelementIndex(key)].Value;
+                int index = GetEelementIndex(key);
+                if (index == -1)
+                {
+                    throw new KeyNotFoundException();
+                }
+
+                return elements[index].Value;
             }
 
             set
             {
                 CheckIfKeyIsNull(key);
                 CheckForReadOnly();
-                elements[GetEelementIndex(key)].Value = value;
+                int index = GetEelementIndex(key);
+
+                if (index == -1)
+                {
+                    Add(key, value);
+                }
+                else
+                {
+                    elements[index].Value = value;
+                }
             }
         }
 
@@ -100,6 +115,24 @@ namespace CRUD
             Count++;
             elements[index] = new Element<TKey, TValue>(key, value, buckets[bucketIndex]);
             buckets[bucketIndex] = index;
+        }
+
+        public void ShowBuckets()
+        {
+            Console.WriteLine("Buckets: ");
+            foreach (int i in buckets)
+            {
+                Console.WriteLine(i);
+            }
+        }
+
+        public void ShowElements()
+        {
+            Console.WriteLine("Elements: ");
+            foreach (var element in this)
+            {
+                Console.WriteLine("Key: " + element.Key + " Value: " + element.Value);
+            }
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
@@ -290,13 +323,7 @@ namespace CRUD
 
         private int GetEelementIndex(TKey key)
         {
-            var index = FindElementByKey(key, out int previous);
-            if (index == -1)
-            {
-                throw new KeyNotFoundException();
-            }
-
-            return index;
+            return FindElementByKey(key, out int previous);
         }
     }
 }

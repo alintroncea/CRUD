@@ -239,5 +239,14 @@ namespace CRUD
             Assert.Equal("a", dictionary[1]);
             Assert.Equal("idk", dictionary[2]);
         }
+
+        [Fact]
+
+        public void TestSetValue2()
+        {
+            Dictionary<string, int> dictionary = new Dictionary<string, int>();           
+            dictionary["two"] = 10;
+            Assert.Equal(10, dictionary["two"]);
+        }
     }
 }

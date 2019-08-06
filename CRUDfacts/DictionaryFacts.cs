@@ -225,7 +225,7 @@ namespace CRUD
 
             Assert.Equal("a", dictionary[1]);
             Assert.Equal("b", dictionary[2]);
-            Assert.Equal(null, dictionary[3]);
+            Assert.Throws<KeyNotFoundException>(() => dictionary[3]);
         }
 
         [Fact]
@@ -238,7 +238,6 @@ namespace CRUD
             dictionary[2] = "idk";
             Assert.Equal("a", dictionary[1]);
             Assert.Equal("idk", dictionary[2]);
-            Assert.Equal(null, dictionary[3]);
         }
     }
 }

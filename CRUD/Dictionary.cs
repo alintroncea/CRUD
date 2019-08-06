@@ -13,6 +13,8 @@ namespace CRUD
         private readonly int dictionarySize = 5;
         private readonly int[] buckets;
         private int freeIndex = -1;
+        private bool isReadOnly;
+        private bool isReadOnlyHasBeenModified;
 
         public Dictionary()
         {
@@ -25,8 +27,13 @@ namespace CRUD
         {
             get
             {
+                int counter = 0;
                 Tkey[] tkeys = new Tkey[Count];
-                GetKeysAndValues(tkeys, null);
+                foreach (var current in this)
+                {
+                    tkeys[counter++] = current.Key;
+                }
+
                 return tkeys;
             }
         }
@@ -35,28 +42,67 @@ namespace CRUD
         {
             get
             {
+                int counter = 0;
                 TValue[] tvalues = new TValue[Count];
-                GetKeysAndValues(null, tvalues);
+                foreach (var current in this)
+                {
+                    tvalues[counter++] = current.Value;
+                }
+
                 return tvalues;
             }
         }
 
         public int Count { get; private set; }
 
-        public bool IsReadOnly => true;
-
-        public TValue this[Tkey key]
+        public bool IsReadOnly
         {
-            get => GetValueByKey(key);
+            get => isReadOnly;
 
             set
             {
-                throw new NotImplementedException();
+                if (isReadOnlyHasBeenModified)
+                {
+                    throw new NotSupportedException("the list is read only");
+                }
+
+                isReadOnly = value;
+                isReadOnlyHasBeenModified = true;
+            }
+        }
+
+        public TValue this[Tkey key]
+        {
+            get
+            {
+                CheckIfKeyIsNull(key);
+                int index = FindElementByKey(key, out int previous);
+                if (index == -1)
+                {
+                    throw new KeyNotFoundException();
+                }
+
+                return elements[index].Value;
+            }
+
+            set
+            {
+                CheckIfKeyIsNull(key);
+                CheckForReadOnly();
+                int index = FindElementByKey(key, out int previous);
+
+                if (index == -1)
+                {
+                    throw new KeyNotFoundException();
+                }
+
+                elements[index].Value = value;
             }
         }
 
         public void Add(Tkey key, TValue value)
         {
+            CheckForReadOnly();
             CheckIfKeyIsNull(key);
             if (ContainsKey(key))
             {
@@ -78,6 +124,7 @@ namespace CRUD
 
         public void Clear()
         {
+            CheckForReadOnly();
             Count = 0;
             Array.Fill(buckets, -1);
         }
@@ -95,6 +142,7 @@ namespace CRUD
 
         public void CopyTo(KeyValuePair<Tkey, TValue>[] array, int arrayIndex)
         {
+            CheckForReadOnly();
             if (array is null)
             {
                 throw new ArgumentNullException(nameof(array));
@@ -115,6 +163,7 @@ namespace CRUD
 
         public bool Remove(Tkey key)
         {
+            CheckForReadOnly();
             var index = FindElementByKey(key, out int previousElementIndex);
             if (index == -1)
             {
@@ -133,17 +182,15 @@ namespace CRUD
         public bool TryGetValue(Tkey key, out TValue value)
         {
             CheckIfKeyIsNull(key);
-            foreach (var element in elements)
+            int index = FindElementByKey(key, out int previous);
+            if (index == -1)
             {
-                if (element?.Key.Equals(key) == true)
-                {
-                    value = element.Value;
-                    return true;
-                }
+                value = default;
+                return false;
             }
 
-            value = default;
-            return false;
+            value = elements[index].Value;
+            return true;
         }
 
         public IEnumerator<KeyValuePair<Tkey, TValue>> GetEnumerator()
@@ -246,42 +293,14 @@ namespace CRUD
             return -1;
         }
 
-        private void GetKeysAndValues(Tkey[] tkeys, TValue[] tvalues)
+        private void CheckForReadOnly()
         {
-            int counter = 0;
-            foreach (var element in elements)
+            if (!IsReadOnly)
             {
-                if (element != null)
-                {
-                    if (tkeys != null)
-                    {
-                        tkeys[counter] = element.Key;
-                    }
-
-                    if (tvalues != null)
-                    {
-                        tvalues[counter] = element.Value;
-                    }
-
-                    counter++;
-                }
-            }
-        }
-
-        private TValue GetValueByKey(Tkey key)
-        {
-            CheckIfKeyIsNull(key);
-            int bucketIndex = GetBucketIndex(key);
-
-            for (int index = buckets[bucketIndex]; index != -1; index = elements[index].NextIndex)
-            {
-                if (elements[index].Key.Equals(key))
-                {
-                    return elements[index].Value;
-                }
+                return;
             }
 
-            return default;
+            throw new NotSupportedException("the list is read only");
         }
     }
 }
